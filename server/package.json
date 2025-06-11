@@ -3,13 +3,16 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"cf-typegen": "wrangler types"
+		"deploy": "wrangler deploy --minify",
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
 	},
 	"devDependencies": {
 		"typescript": "^5.5.2",
 		"wrangler": "^4.19.1"
+	},
+	"dependencies": {
+		"hono": "^4.7.11",
+		"zod": "^3.25.61"
 	}
 }

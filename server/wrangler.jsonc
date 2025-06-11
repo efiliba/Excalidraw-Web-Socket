@@ -9,20 +9,26 @@
 	"compatibility_date": "2025-06-10",
 	"migrations": [
 		{
+			"tag": "v1",
 			"new_sqlite_classes": [
-				"MyDurableObject"
-			],
-			"tag": "v1"
-		}
+				"DurableObjectWebSocket"
+			]
+		},
+		// {
+		// 	"tag": "v2",
+		// 	"deleted_classes": [
+		// 		"MyDurableObject"
+		// 	]
+		// }
 	],
 	"durable_objects": {
-		"bindings": [
-			{
-				"class_name": "MyDurableObject",
-				"name": "MY_DURABLE_OBJECT"
-			}
-		]
-	},
+    "bindings": [
+      {
+        "name": "DURABLE_OBJECT",
+        "class_name": "DurableObjectWebSocket"
+      },
+    ],
+  },
 	"observability": {
 		"enabled": true
 	}
