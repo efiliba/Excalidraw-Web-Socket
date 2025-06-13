@@ -37,7 +37,7 @@
 		/* Skip type checking all .d.ts files. */
 		"skipLibCheck": true,
 		"types": [
-			"./server/worker-configuration.d.ts"
+			"./apps/server/worker-configuration.d.ts"
 		]
 	}
 }

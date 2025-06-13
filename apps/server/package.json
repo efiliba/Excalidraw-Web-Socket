@@ -2,17 +2,19 @@
 	"name": "durable-object-starter",
 	"version": "0.0.0",
 	"private": true,
+  "type": "module",
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify",
 		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
 	},
-	"devDependencies": {
-		"typescript": "^5.5.2",
-		"wrangler": "^4.19.1"
-	},
 	"dependencies": {
 		"hono": "^4.7.11",
-		"zod": "^3.25.61"
+		"zod": "^3.25.61",
+		"@repo/schemas": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"wrangler": "^4.19.1"
 	}
 }

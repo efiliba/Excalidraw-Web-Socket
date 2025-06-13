@@ -1,0 +1,24 @@
+{
+	"name": "@repo/schemas",
+	"version": "1.0.0",
+	"type": "module",
+	"private": true,
+	"main": "./dist/events.js",
+	"types": "./dist/events.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/events.d.ts",
+			"import": "./dist/events.js",
+			"require": "./dist/events.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"zod": "^3.25.61"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3"
+	}
+}

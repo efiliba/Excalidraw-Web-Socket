@@ -1,0 +1,9 @@
+{
+  "name": "durable-objects-workspaces",
+  "private": true,
+  "scripts": {},
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

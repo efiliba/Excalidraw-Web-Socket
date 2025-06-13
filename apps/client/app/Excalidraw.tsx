@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
 import { useEffect, useState } from "react";
 import useBufferedWebSocket from "@/hooks/excalidraw-socket";
-import { BufferEventType, PointerEventSchema, PointerEvent, ExcalidrawElementChangeSchema, ExcalidrawElementChange } from "../types";
+import { BufferEventType, PointerEventSchema, PointerEvent, ExcalidrawElementChangeSchema, ExcalidrawElementChange } from "@repo/schemas";
 // import { useParams } from "next/navigation";
 
 const Excalidraw = dynamic(

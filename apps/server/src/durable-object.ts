@@ -1,5 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
-import { BufferEvent, ExcalidrawElementChangeSchema } from "../types";
+import { BufferEvent, ExcalidrawElementChangeSchema } from "@repo/schemas";
 
 export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 	elements: any[] = [];
@@ -13,12 +13,13 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 	}
 
 	async fetch(request: Request): Promise<Response> {
-		const webSocketPair = new WebSocketPair();
-		const client = webSocketPair[1];
-		const server = webSocketPair[0];
-		// const { 0: server, 1: client } = new WebSocketPair();
+		// const webSocketPair = new WebSocketPair();
+		// const client = webSocketPair[1];
+		// const server = webSocketPair[0];
+		const { 0: server, 1: client } = new WebSocketPair();
 
 		this.ctx.acceptWebSocket(server);
+
 		return new Response(null, {
 			status: 101,
 			webSocket: client,
