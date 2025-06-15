@@ -2,7 +2,7 @@ import { DurableObject } from "cloudflare:workers";
 import { BufferEvent, ExcalidrawElementChangeSchema } from "@repo/schemas";
 
 export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
-	elements: any[] = [];
+	elements: unknown[] = [];
 
 	constructor(ctx: DurableObjectState, env: Cloudflare) {
 		super(ctx, env);
@@ -13,11 +13,7 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 	}
 
 	async fetch(request: Request): Promise<Response> {
-		// const webSocketPair = new WebSocketPair();
-		// const client = webSocketPair[1];
-		// const server = webSocketPair[0];
 		const { 0: server, 1: client } = new WebSocketPair();
-
 		this.ctx.acceptWebSocket(server);
 
 		return new Response(null, {
@@ -26,7 +22,14 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 		});
 	}
 
-	async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
+	async webSocketMessage(ws: WebSocket, message: string): Promise<void> {
+		this.ctx.getWebSockets().forEach((socket) => {
+			if (socket !== ws) {
+				socket.send(message);
+			}
+		});
+
+		// Handle initial elements population when app starts by recieving the "setup" command
 		if (message === "setup") {
 			ws.send(
 				JSON.stringify(
@@ -36,14 +39,14 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 					})
 				)
 			);
-			return;
+		} else {
+			this.broadcastMsg(ws, message);
 		}
-
-		this.broadcastMsg(ws, message);
 	}
 
-	webSocketClose(ws: WebSocket) {
-		console.log("WebSocket closed");
+	async webSocketClose(ws: WebSocket, code: number, reason: string, wasClean: boolean) {
+		// If the client closes the connection, the runtime will invoke the webSocketClose() handler.
+		ws.close(code, "Durable Object is closing WebSocket");
 	}
 
 	webSocketError(ws: WebSocket, error: unknown): void | Promise<void> {
@@ -56,10 +59,12 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 				session.send(message);
 			}
 		}
+
 		if (typeof message === "string") {
-			const event = BufferEvent.parse(JSON.parse(message));
-			if (event.type === "elementChange") {
-				this.elements = event.data;
+			const { type, data } = BufferEvent.parse(JSON.parse(message));
+
+			if (type === "elementChange") {
+				this.elements = data;
 				this.ctx.storage.put("elements", this.elements);
 			}
 		}

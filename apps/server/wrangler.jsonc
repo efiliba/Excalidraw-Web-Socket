@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "durable-object-starter",
+	"name": "durable-object-web-socket",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-06-10",
 	"migrations": [
@@ -24,7 +24,7 @@
 	"durable_objects": {
     "bindings": [
       {
-        "name": "DURABLE_OBJECT",
+        "name": "DURABLE_OBJECT_WS",
         "class_name": "DurableObjectWebSocket"
       },
     ],
