@@ -1,15 +1,24 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
-import { BufferEventType, PointerEventSchema, PointerEvent, ExcalidrawElementChangeSchema, ExcalidrawElementChange } from "@repo/schemas";
-import { useBufferedWebSocket } from "@/hooks/excalidraw-web-socket";
+import type { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
+
+import {
+	BufferEvent,
+	BufferEventType,
+	PointerEvent,
+	PointerEventSchema,
+	ExcalidrawElementChange,
+	ExcalidrawElementChangeSchema,
+} from "@repo/schemas";
 
 import "@excalidraw/excalidraw/index.css";
 
 // Import Excalidraw only on client side to prevent: ReferenceError: window is not defined
 const Excalidraw = dynamic(async () => (await import("@excalidraw/excalidraw")).Excalidraw, { ssr: false });
+
+const BUFFER_TIME = 10;
 
 export default function ExcalidrawComponent({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = use(params);
@@ -17,10 +26,66 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 	const [userId, setUserId] = useState<string | null>(null);
 	const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
 
+	const bufferedEvents = useRef<Record<string, BufferEventType>>({});
+
+	useEffect(() => {
+		const socket = new WebSocket(`ws://localhost:8787/api/ws/${id}`);
+
+		if (socket) {
+			socket.onmessage = ({ data }) => {
+				if (data !== "setup") {
+					handleMessage(BufferEvent.parse(JSON.parse(data)));
+				}
+			};
+
+			socket.onopen = () => socket.send("setup"); // Call setup functionality
+
+			socket.onclose = () => console.log("socket closed");
+		}
+
+		const interval = setInterval(() => {
+			const events = Object.values(bufferedEvents.current);
+			if (socket.readyState === WebSocket.OPEN) {
+				events.forEach((event) => socket.send(JSON.stringify(event)));
+
+				bufferedEvents.current = {}; // Clear buffer after sending
+			}
+		}, BUFFER_TIME);
+
+		return () => {
+			clearInterval(interval);
+
+			if (socket?.readyState === WebSocket.OPEN) {
+				socket.close();
+			}
+		};
+	});
+
+	useEffect(() => {
+		// Try to get userId from localStorage else generate a new one
+		let id = localStorage.getItem("userId");
+		if (!id) {
+			id = Math.random().toString(36).substring(2, 15);
+			localStorage.setItem("userId", id);
+		}
+
+		setUserId(id);
+	}, []);
+
+	const handleMessage = (event: BufferEventType) => {
+		switch (event.type) {
+			case "pointer":
+				handlePointerEvent(event);
+				break;
+			case "elementChange":
+				handleElementChangeEvent(event);
+				break;
+		}
+	};
+
 	const handlePointerEvent = ({ data }: PointerEvent) => {
 		if (excalidrawAPI) {
-			const allCollaborators = excalidrawAPI.getAppState().collaborators;
-			const collaborators = new Map(allCollaborators);
+			const collaborators = new Map(excalidrawAPI.getAppState().collaborators);
 
 			collaborators.set(data.userId as SocketId, {
 				username: data.userId,
@@ -45,29 +110,19 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 		}
 	};
 
-	const handleMessage = (event: BufferEventType) => {
+	// const sendEventViaWebSocket = useBufferedWebSocket(handleMessage, id);
+	const sendEventViaWebSocket = (event: BufferEventType) => {
 		switch (event.type) {
 			case "pointer":
-				handlePointerEvent(event);
+				bufferedEvents.current[event.data.userId] = event;
 				break;
 			case "elementChange":
-				handleElementChangeEvent(event);
+				// For a production ready implementation, you would want to handle specific element changes and not the
+				// entire element list. This exmaple just saves the entire element list and batches them to the ws server
+				bufferedEvents.current["all-elements"] = event;
 				break;
 		}
 	};
-
-	const sendEventViaWebSocket = useBufferedWebSocket(handleMessage, id);
-
-	useEffect(() => {
-		// Try to get userId from localStorage else generate a new one
-		let id = localStorage.getItem("userId");
-		if (!id) {
-			id = Math.random().toString(36).substring(2, 15);
-			localStorage.setItem("userId", id);
-		}
-
-		setUserId(id);
-	}, []);
 
 	const handlePointerUpdate = ({ pointer }: { pointer: Partial<PointerEvent["data"]> }) => {
 		sendEventViaWebSocket(
@@ -90,7 +145,7 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 	};
 
 	return (
-		<div className="canvas" style={{ height: "800px", width: "100%" }}>
+		<div style={{ height: "800px", width: "100%" }}>
 			<Excalidraw
 				initialData={{
 					appState: { activeTool: { type: "freedraw", customType: null, lastActiveTool: null, locked: false } },

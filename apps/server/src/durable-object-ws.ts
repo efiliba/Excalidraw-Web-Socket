@@ -12,7 +12,7 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 		});
 	}
 
-	async fetch(request: Request): Promise<Response> {
+	async fetch(request: Request) {
 		const { 0: server, 1: client } = new WebSocketPair();
 		this.ctx.acceptWebSocket(server);
 
@@ -22,7 +22,7 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 		});
 	}
 
-	async webSocketMessage(ws: WebSocket, message: string): Promise<void> {
+	async webSocketMessage(ws: WebSocket, message: string) {
 		this.ctx.getWebSockets().forEach((socket) => {
 			if (socket !== ws) {
 				socket.send(message);
@@ -40,7 +40,7 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 				)
 			);
 		} else {
-			this.broadcastMsg(ws, message);
+			this.broadcastMessage(ws, message);
 		}
 	}
 
@@ -53,21 +53,21 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 		console.log("Error:", error);
 	}
 
-	broadcastMsg(ws: WebSocket, message: string | ArrayBuffer) {
+	broadcastMessage(ws: WebSocket, message: string) {
 		for (const session of this.ctx.getWebSockets()) {
 			if (session !== ws) {
 				session.send(message);
 			}
 		}
 
-		if (typeof message === "string") {
-			const { type, data } = BufferEvent.parse(JSON.parse(message));
+		// if (typeof message === "string") {
+		const { type, data } = BufferEvent.parse(JSON.parse(message));
 
-			if (type === "elementChange") {
-				this.elements = data;
-				this.ctx.storage.put("elements", this.elements);
-			}
+		if (type === "elementChange") {
+			this.elements = data;
+			this.ctx.storage.put("elements", this.elements);
 		}
+		// }
 	}
 
 	async getElements() {
