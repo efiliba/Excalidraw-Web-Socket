@@ -3,19 +3,20 @@ import { BufferEvent, BufferEventType } from "@repo/schemas";
 
 export const useBufferedWebSocket = (handleMessage: (event: BufferEventType) => void, id: string, bufferTime = 10) => {
 	const bufferedEvents = useRef<Record<string, BufferEventType>>({});
-	const socketRef = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
-		socketRef.current = new WebSocket(`ws://localhost:8787/api/ws/${id}`);
-
-		const socket = socketRef.current;
+		const socket = new WebSocket(`ws://localhost:8787/api/ws/${id}`);
 
 		if (socket) {
 			socket.onmessage = ({ data }) => {
-				handleMessage(BufferEvent.parse(JSON.parse(data)));
+				if (data !== "setup") {
+					handleMessage(BufferEvent.parse(JSON.parse(data)));
+				}
 			};
 
 			socket.onopen = () => socket.send("setup"); // Call setup functionality
+
+			socket.onclose = () => console.log("------>socket closed");
 		}
 
 		const interval = setInterval(() => {

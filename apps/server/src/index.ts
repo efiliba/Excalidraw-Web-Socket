@@ -29,7 +29,7 @@ app.get("/", async (c: Context) => {
 app.get("api/ws/:drawingId", (c) => {
 	const drawingId = c.req.param("drawingId");
 	const upgradeHeader = c.req.header("Upgrade");
-	if (!upgradeHeader || upgradeHeader !== "websocket") {
+	if (upgradeHeader !== "websocket") {
 		return c.text("Expected websocket", 426);
 	}
 

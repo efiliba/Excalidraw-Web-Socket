@@ -1,10 +1,10 @@
 "use client";
 
+import { use, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
-import { use, useEffect, useState } from "react";
-import { useBufferedWebSocket } from "@/hooks/excalidraw-web-socket";
 import { BufferEventType, PointerEventSchema, PointerEvent, ExcalidrawElementChangeSchema, ExcalidrawElementChange } from "@repo/schemas";
+import { useBufferedWebSocket } from "@/hooks/excalidraw-web-socket";
 
 import "@excalidraw/excalidraw/index.css";
 
@@ -91,7 +91,17 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 
 	return (
 		<div className="canvas" style={{ height: "800px", width: "100%" }}>
-			<Excalidraw onPointerUpdate={handlePointerUpdate} onPointerUp={handlePointerUp} excalidrawAPI={setExcalidrawAPI} />
+			<Excalidraw
+				initialData={{
+					appState: { activeTool: { type: "freedraw", customType: null, lastActiveTool: null, locked: false } },
+				}}
+				theme="dark"
+				autoFocus
+				isCollaborating
+				onPointerUpdate={handlePointerUpdate}
+				onPointerUp={handlePointerUp}
+				excalidrawAPI={setExcalidrawAPI}
+			/>
 		</div>
 	);
 }
