@@ -13,14 +13,12 @@ import {
 	ExcalidrawElementChangeSchema,
 } from "@repo/schemas";
 
-import "@excalidraw/excalidraw/index.css";
-
-// Import Excalidraw only on client side to prevent: ReferenceError: window is not defined
-const Excalidraw = dynamic(async () => (await import("@excalidraw/excalidraw")).Excalidraw, { ssr: false });
+// Import ExcalidrawComponent only on client side to prevent: ReferenceError: window is not defined
+const ExcalidrawComponent = dynamic(async () => (await import("@/components/ExcalidrawComponent")).default, { ssr: false });
 
 const BUFFER_TIME = 10;
 
-export default function ExcalidrawComponent({ params }: { params: Promise<{ id: string }> }) {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = use(params);
 
 	const [userId, setUserId] = useState<string | null>(null);
@@ -104,13 +102,8 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 		}
 	};
 
-	const handleElementChangeEvent = ({ data }: ExcalidrawElementChange) => {
-		if (excalidrawAPI) {
-			excalidrawAPI.updateScene({ elements: data });
-		}
-	};
+	const handleElementChangeEvent = ({ data }: ExcalidrawElementChange) => excalidrawAPI?.updateScene({ elements: data });
 
-	// const sendEventViaWebSocket = useBufferedWebSocket(handleMessage, id);
 	const sendEventViaWebSocket = (event: BufferEventType) => {
 		switch (event.type) {
 			case "pointer":
@@ -144,19 +137,25 @@ export default function ExcalidrawComponent({ params }: { params: Promise<{ id: 
 		}
 	};
 
+	const handleClearClicked = () => {
+		if (excalidrawAPI) {
+			excalidrawAPI.updateScene({ elements: [] });
+
+			sendEventViaWebSocket(
+				ExcalidrawElementChangeSchema.parse({
+					type: "elementChange",
+					data: excalidrawAPI.getSceneElements(),
+				})
+			);
+		}
+	};
+
 	return (
-		<div style={{ height: "800px", width: "100%" }}>
-			<Excalidraw
-				initialData={{
-					appState: { activeTool: { type: "freedraw", customType: null, lastActiveTool: null, locked: false } },
-				}}
-				theme="dark"
-				autoFocus
-				isCollaborating
-				onPointerUpdate={handlePointerUpdate}
-				onPointerUp={handlePointerUp}
-				excalidrawAPI={setExcalidrawAPI}
-			/>
-		</div>
+		<ExcalidrawComponent
+			excalidrawAPI={setExcalidrawAPI}
+			onPointerUpdate={handlePointerUpdate}
+			onPointerUp={handlePointerUp}
+			onClearClicked={handleClearClicked}
+		/>
 	);
 }
