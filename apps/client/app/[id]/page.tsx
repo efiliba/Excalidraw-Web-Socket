@@ -9,6 +9,8 @@ import { BufferEvent, BufferEventType, PointerEvent, ExcalidrawElementChange } f
 // Import ExcalidrawComponent only on client side to prevent: ReferenceError: window is not defined
 const ExcalidrawComponent = dynamic(async () => (await import("@/components/ExcalidrawComponent")).default, { ssr: false });
 
+export const runtime = "edge";
+
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = use(params);
 
