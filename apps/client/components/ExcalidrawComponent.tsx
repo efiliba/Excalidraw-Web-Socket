@@ -1,8 +1,7 @@
 import { Excalidraw, MainMenu } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI, ExcalidrawProps } from "@excalidraw/excalidraw/types";
 
-import { ExcalidrawElementChangeSchema, PointerEventSchema } from "@repo/schemas";
-import type { PointerEvent, BufferEventType } from "@repo/schemas";
+import { ExcalidrawElementChangeSchema, PointerEventSchema, PointerEvent, BufferEventType } from "@/types/events";
 
 import "@excalidraw/excalidraw/index.css";
 

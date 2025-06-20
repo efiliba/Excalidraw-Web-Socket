@@ -4,12 +4,10 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
 
-import { BufferEvent, BufferEventType, PointerEvent, ExcalidrawElementChange } from "@repo/schemas";
+import { BufferEvent, BufferEventType, PointerEvent, ExcalidrawElementChange } from "@/types/events";
 
 // Import ExcalidrawComponent only on client side to prevent: ReferenceError: window is not defined
 const ExcalidrawComponent = dynamic(async () => (await import("@/components/ExcalidrawComponent")).default, { ssr: false });
-
-export const runtime = "edge";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = use(params);
