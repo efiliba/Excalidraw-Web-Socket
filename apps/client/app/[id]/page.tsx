@@ -55,7 +55,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	);
 
 	useEffect(() => {
-		const socket = new WebSocket(`ws://localhost:8787/api/ws/${id}`);
+		const socket = new WebSocket(`ws://${process.env.WS_CLIENT}/api/ws/${id}`);
 		socketRef.current = socket;
 
 		socket.onmessage = ({ data }) => {
