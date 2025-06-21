@@ -4,7 +4,7 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ExcalidrawImperativeAPI, SocketId } from "@excalidraw/excalidraw/types";
 
-import { BufferEvent, BufferEventType, PointerEvent, ExcalidrawElementChange } from "@/types/events";
+import { BufferEvent, BufferEventType, PointerEvent, ExcalidrawElementChange } from "@repo/schemas";
 
 // Import ExcalidrawComponent only on client side to prevent: ReferenceError: window is not defined
 const ExcalidrawComponent = dynamic(async () => (await import("@/components/ExcalidrawComponent")).default, { ssr: false });
@@ -55,7 +55,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	);
 
 	useEffect(() => {
-		const socket = new WebSocket(`ws://${process.env.WS_CLIENT}/api/ws/${id}`);
+		const socket = new WebSocket(`${process.env.NEXT_PUBLIC_WS_CLIENT}/api/ws/${id}`);
 		socketRef.current = socket;
 
 		socket.onmessage = ({ data }) => {

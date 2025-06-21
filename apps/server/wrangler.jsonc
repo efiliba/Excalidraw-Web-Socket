@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "durable-object-web-socket",
+	"name": "excalidraw-server",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-06-10",
 	"migrations": [
@@ -13,13 +13,7 @@
 			"new_sqlite_classes": [
 				"DurableObjectWebSocket"
 			]
-		},
-		// {
-		// 	"tag": "v2",
-		// 	"deleted_classes": [
-		// 		"MyDurableObject"
-		// 	]
-		// }
+		}
 	],
 	"durable_objects": {
     "bindings": [

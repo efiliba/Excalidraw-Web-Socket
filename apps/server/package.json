@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify",
-		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
+		"preview": "wrangler dev --remote"
 	},
 	"dependencies": {
 		"@repo/schemas": "workspace:*",
@@ -15,6 +16,6 @@
 	},
 	"devDependencies": {
 		"typescript": "^5.8.3",
-		"wrangler": "^4.19.1"
+		"wrangler": "^4.20.3"
 	}
 }
