@@ -1,6 +1,6 @@
-# Excalidraw App to experiment with Web Sockets through Cloudflare Workers
+# Excalidraw App to experiment with Web Sockets through Cloudflare Durable Objects
 
-Experiment with web sockets using Cloudflare Workers through collaborative Excalidraw Apps deployed on Cloudflare
+Experiment with web sockets using Cloudflare Durable Objects through collaborative Excalidraw Apps deployed on Cloudflare Workers
 [Live Demo](https://excalidraw.filiba.workers.dev/a)
 
 Based on: https://www.youtube.com/watch?v=qF2PuYnBahw
@@ -34,7 +34,7 @@ cd apps/client && pnpm dev
 ```
 
 Should run at: http://localhost:3000
-Add an identifier at the end to distingish between different 'rooms'
+Add an identifier at the end to distinguish between different 'rooms'
 e.g. http://localhost:3000/a
 
 Open an incognito tab to the same url to view collaboration through web sockets
