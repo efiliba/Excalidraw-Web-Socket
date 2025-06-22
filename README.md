@@ -1,6 +1,6 @@
 # Excalidraw App to experiment with Web Sockets through Cloudflare Durable Objects
 
-Experiment with web sockets using Cloudflare Durable Objects through collaborative Excalidraw Apps deployed on Cloudflare Workers
+Experiment with web sockets using Cloudflare Durable Objects through collaborative Excalidraw Nextjs Apps deployed on Cloudflare Workers
 [Live Demo](https://excalidraw.filiba.workers.dev/a)
 
 Based on: https://www.youtube.com/watch?v=qF2PuYnBahw
