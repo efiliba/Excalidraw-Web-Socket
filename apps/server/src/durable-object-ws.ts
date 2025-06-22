@@ -60,14 +60,12 @@ export class DurableObjectWebSocket extends DurableObject<Cloudflare> {
 			}
 		}
 
-		// if (typeof message === "string") {
 		const { type, data } = BufferEvent.parse(JSON.parse(message));
 
 		if (type === "elementChange") {
 			this.elements = data;
 			this.ctx.storage.put("elements", this.elements);
 		}
-		// }
 	}
 
 	async getElements() {
